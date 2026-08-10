@@ -59,8 +59,20 @@ jobs:
           } > /tmp/refresh.sql
 
           # Creds that provably work: the dashboard app's own DATABASE_URL.
-          DBURL=$(flyctl ssh console -a edi-reconciliation-tool -C "printenv DATABASE_URL" 2>/dev/null | tr -d '\r' | grep -E '^postgres(ql)?://' | tail -1)
-          test -n "$DBURL"
+          # Retry the fetch — the app machine can auto-stop, so the first ssh
+          # attempt may return empty. That is transient infra, NOT a data verdict.
+          # stderr is left visible (no 2>/dev/null) so real ssh errors surface.
+          DBURL=""
+          for attempt in 1 2 3; do
+            DBURL=$(flyctl ssh console -a edi-reconciliation-tool -C "printenv DATABASE_URL" | tr -d '\r' | grep -E '^postgres(ql)?://' | tail -1)
+            [ -n "$DBURL" ] && break
+            echo "attempt $attempt/3: DATABASE_URL not fetched (app may be waking); retry in 10s" >&2
+            sleep 10
+          done
+          if [ -z "$DBURL" ]; then
+            echo "PROBE INFRASTRUCTURE FAILURE: could not fetch DATABASE_URL from Fly (app may be stopped) — this is NOT a data verdict." >&2
+            exit 2
+          fi
           echo "::add-mask::$DBURL"
           REST=${DBURL#postgres://}; REST=${REST#postgresql://}
           CREDS=${REST%%@*}
