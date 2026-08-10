@@ -12,3 +12,9 @@ transforms/target/
 transforms/logs/
 *.md
 !README.md
+
+# --- lailara engagement scaffold ---
+client-data/
+client-output/
+engagement.yml
+engagement.yaml

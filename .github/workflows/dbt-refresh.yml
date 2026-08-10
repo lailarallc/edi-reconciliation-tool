@@ -24,6 +24,10 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v5
+
+      - name: Engagement guard
+        run: python3 scripts/engagement_guard.py
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
