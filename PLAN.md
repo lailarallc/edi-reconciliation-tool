@@ -111,3 +111,9 @@ Each entry records what was found, what was fixed, and when to
 check again.
 
 <!-- Entries are added by /improve — don't delete this section -->
+
+### 2026-09-23 — Audit (health check only)
+- **Findings:** 2 critical, 6 important, 3 nice-to-have
+- **Top concerns:** (1) `dispute_urgent` in fct_exceptions.sql is `expiry <= current_date + 7` with no lower bound, so already-expired windows get the red urgent badge and the catalog drill-down counts them as "still disputable". (2) The signed-impact fix was applied only to the hero cards: `get_callout_stats` (lifecycle.py) and the `/api/catalog/drilldown` total still `sum(dollar_impact)` raw, so over- and under-billed Shipped-Not-Invoiced amounts net against each other. The exception queue also orders by signed value, which pushes over-invoiced rows past the 200-row limit. (3) `/api/catalog/drilldown` has no upper bound on `limit`, so anyone can pull the whole 680K-row mart into the 256MB VM. Also: the test suite is red (3 test_validate unit failures since June, test_loader imports a missing `corpus.generator.generate`, test_dollar_impact_is_non_negative contradicts the signed design), fly-deploy ships every push with no test gate, and HANDOFF has no entry since 07-20 despite ~18 commits since then.
+- **Action taken:** Audit only — no fixes this session (manual security/code/data pass replaced /security-review, /ce:review, data-science-reviewer)
+- **Next review:** 2026-12-22
