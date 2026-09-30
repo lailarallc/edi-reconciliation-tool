@@ -45,6 +45,7 @@ parse:
 
 transform:
 	@echo "==> Running dbt models..."
+	$(PYTHON) corpus/prod_guard.py $${POSTGRES_HOST:-localhost}:$${POSTGRES_PORT:-5432}
 	cd $(DBT_DIR) && $(DBT) deps
 	cd $(DBT_DIR) && $(DBT) seed
 	cd $(DBT_DIR) && $(DBT) run

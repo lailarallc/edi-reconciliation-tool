@@ -14,6 +14,7 @@ import os
 from datetime import datetime, timezone
 from typing import Any
 
+from corpus import prod_guard
 from corpus.generator import GenerateResult
 from parser.x12_parser import parse_document
 from parser.models import (
@@ -287,10 +288,14 @@ def _connect():
     import psycopg2
     database_url = os.environ.get("DATABASE_URL")
     if database_url:
+        prod_guard.check(database_url)  # refuses a fly tunnel to production
         return psycopg2.connect(database_url)
+    host = os.environ.get("POSTGRES_HOST", "localhost")
+    port = int(os.environ.get("POSTGRES_PORT", "5432"))
+    prod_guard.check(host=host, port=port)  # refuses a fly tunnel to production
     return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "localhost"),
-        port=int(os.environ.get("POSTGRES_PORT", "5432")),
+        host=host,
+        port=port,
         user=os.environ.get("POSTGRES_USER", "postgres"),
         password=os.environ.get("POSTGRES_PASSWORD", ""),
         dbname=os.environ.get("POSTGRES_DB", "cinderhaven"),
