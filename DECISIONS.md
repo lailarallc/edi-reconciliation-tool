@@ -20,7 +20,7 @@ Each entry:
 ## Data Integrity
 
 ### 2026-07-13 — Derive all partner invoice numbers from PO number, not ISA counter
-- **Why:** ISA counter resets per `generate()` chunk call. With 17–51 chunks per partner, invoice numbers collided — `payment_agg` summed payments across all collisions, inflating `short_pay` from $440K to $17M. Walmart already used PO-derived invoice numbers; UNFI and KeHE now match.
+- **Why:** ISA counter resets per `generate()` chunk call. With 17–51 chunks per partner, invoice numbers collided — `payment_agg` summed payments across all collisions, inflating `short_pay` from $440K to $17M. The national mass retailer already used PO-derived invoice numbers; distributor A and distributor B now match.
 - **Scope:** `corpus/generator/partners/unfi.py`, `corpus/generator/partners/kehe.py`
 - **Do not:** Use ISA counter for any identifier that participates in cross-document joins (invoice numbers, PO references). ISA control numbers for X12 envelopes are fine — they're unique within a single interchange.
 

@@ -22,7 +22,7 @@ For a specialty food brand trading EDI with three or more partners, content-leve
 
 ### Cinderhaven context
 
-Built on the Cinderhaven synthetic dataset — a ~$25M specialty food brand, 50 SKUs across 5 product lines and 6 contracted retailers. Data is synthetic; methodology and deliverables are real. Canonical baseline: 50 SKUs · 5 product lines (AS·PS·SC·DG·SB) · 6 retailers (Walmart·Costco·Whole Foods·Sprouts·Kroger·Regional Group) · 10 channels (6 retail + UNFI·KeHE·DPI + DTC). Scoped to the three EDI trading partners (Walmart, UNFI, KeHE).
+Built on the Cinderhaven synthetic dataset — a ~$25M specialty food brand, 50 SKUs across 5 product lines and 6 contracted retailers. Data is synthetic; methodology and deliverables are real. Canonical baseline: 50 SKUs · 5 product lines (AS·PS·SC·DG·SB) · 6 retailers (national mass retailer · club retailer · natural grocer · regional natural grocer · conventional grocer · Regional Group) · 10 channels (6 retail + distributor A · distributor B · distributor C + DTC). Scoped to the three EDI trading partners (national mass retailer, distributor A, distributor B).
 
 ## Quick start
 
