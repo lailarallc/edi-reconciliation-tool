@@ -42,6 +42,21 @@
     </footer>
 
   </div>
+  <script>
+    // htmx does not swap error responses, so a failed partial would leave the
+    // previous filter's rows (with their dollar figures) or a "Loading" note
+    // in place. Replace the target with an explicit unavailable message.
+    document.body.addEventListener("htmx:responseError", function (evt) {
+      var target = evt.detail.target;
+      if (!target) return;
+      var msg = "Data temporarily unavailable. These figures could not be loaded; reload in a minute.";
+      if (target.tagName === "TBODY") {
+        target.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-secondary);font-size:14px;">' + msg + "</td></tr>";
+      } else {
+        target.innerHTML = '<p style="font-size:14px;color:var(--text-secondary);">' + msg + "</p>";
+      }
+    });
+  </script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>

@@ -14,7 +14,7 @@
     <tbody>
       {% for ack in acks %}
       <tr>
-        <td><span class="partner-badge">{{ ack.partner_id }}</span></td>
+        <td><span class="partner-badge">{{ ack.partner_id | partner_label }}</span></td>
         <td style="font-weight:600;font-size:13px;">{{ ack.document_type }}</td>
         <td style="font-family:monospace;font-size:12px;">{{ ack.isa_control_number }}</td>
         <td style="font-size:13px;">{{ ack.doc_date or '—' }}</td>

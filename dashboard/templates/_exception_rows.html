@@ -1,11 +1,11 @@
 {% if exceptions %}
   {% for exc in exceptions %}
   <tr>
-    <td><span class="partner-badge">{{ exc.partner_id }}</span></td>
+    <td><span class="partner-badge">{{ exc.partner_id | partner_label }}</span></td>
     <td><span class="chip chip--{{ exc.exception_class }}">{{ exc.class_label }}</span></td>
-    <td style="font-family:monospace;font-size:13px;">{{ exc.po_number or '—' }}</td>
+    <td style="font-family:monospace;font-size:13px;">{{ (exc.po_number | display_id(exc.partner_id)) or '—' }}</td>
     <td style="font-family:monospace;font-size:13px;">{{ exc.sku or '—' }}</td>
-    <td style="font-size:13px;">{{ exc.invoice_number or '—' }}</td>
+    <td style="font-size:13px;">{{ (exc.invoice_number | display_id(exc.partner_id)) or '—' }}</td>
     <td class="td--dollar {{ 'td--zero' if exc.dollar_impact == 0 else '' }}">{{ exc.dollar_fmt }}</td>
     <td style="font-size:13px;">
       {% if exc.dispute_window_expires_at %}

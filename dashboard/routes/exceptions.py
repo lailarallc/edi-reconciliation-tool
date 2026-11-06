@@ -1,7 +1,9 @@
 """Exception dashboard routes.
 
 Queries fct_exceptions and int_997_match from the edi_marts schema.
-All routes degrade gracefully when the database is not configured.
+All routes degrade gracefully when the database is not configured. When a
+configured database cannot be reached, db.query raises db.DataUnavailable
+(HTTP 503); helpers log and re-raise rather than return empty rows.
 """
 from __future__ import annotations
 
@@ -10,6 +12,7 @@ from datetime import date, timedelta
 from typing import Any
 
 import dashboard.db as db
+from dashboard.labels import display_label
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +90,15 @@ def get_date_range_bounds() -> dict[str, Any] | None:
         }
     except Exception:
         logger.exception("get_date_range_bounds query failed")
-        return None
+        raise
+
+
+def _is_iso_date(value: str) -> bool:
+    try:
+        date.fromisoformat(value)
+    except (TypeError, ValueError):
+        return False
+    return True
 
 
 def _date_where(date_start: str, date_end: str) -> tuple[str, list]:
@@ -98,8 +109,11 @@ def _date_where(date_start: str, date_end: str) -> tuple[str, list]:
     the card is labeled "full corpus" in the template when a range is active.
     997 rows pass through only while their anchor is NULL (pre-migration
     data); once fct_exceptions carries doc_date anchors they filter normally.
-    Returns (sql_fragment, params_list).
+    Returns (sql_fragment, params_list). A value that is not an ISO date
+    (?date_start=notadate) is ignored, as if absent, rather than sent to SQL.
     """
+    date_start = date_start if _is_iso_date(date_start) else ""
+    date_end = date_end if _is_iso_date(date_end) else ""
     if not date_start and not date_end:
         return "", []
     conditions = []
@@ -180,7 +194,7 @@ def get_exception_summary(
         return result, total_exposure
     except Exception:
         logger.exception("get_exception_summary query failed")
-        return [], 0.0
+        raise
 
 
 def get_exceptions(
@@ -234,7 +248,7 @@ def get_exceptions(
         return rows
     except Exception:
         logger.exception("get_exceptions query failed")
-        return []
+        raise
 
 
 def get_corpus_date_range() -> str | None:
@@ -258,7 +272,7 @@ def get_corpus_date_range() -> str | None:
         return f"{mn.strftime('%b %Y')} – {mx.strftime('%b %Y')}"
     except Exception:
         logger.exception("get_corpus_date_range query failed")
-        return None
+        raise
 
 
 def get_partners() -> list[str]:
@@ -266,11 +280,12 @@ def get_partners() -> list[str]:
     if not db.is_configured():
         return []
     try:
-        rows = db.query(f"select distinct partner_id from {_SCHEMA}.fct_exceptions order by 1")
-        return [r["partner_id"] for r in rows]
+        rows = db.query(f"select distinct partner_id from {_SCHEMA}.fct_exceptions")
+        # Sort by public label: real-ID alphabetical order would leak the mapping.
+        return sorted((r["partner_id"] for r in rows), key=display_label)
     except Exception:
         logger.exception("get_partners query failed")
-        return []
+        raise
 
 
 def get_997_status() -> list[dict[str, Any]]:
@@ -298,4 +313,4 @@ def get_997_status() -> list[dict[str, Any]]:
         return rows
     except Exception:
         logger.exception("get_997_status query failed")
-        return []
+        raise

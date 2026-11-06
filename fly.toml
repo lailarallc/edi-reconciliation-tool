@@ -28,7 +28,9 @@ primary_region = "iad"
     grace_period  = "5s"
     interval      = "30s"
     method        = "GET"
-    path          = "/"
+    # /healthz touches no database: a database outage shows visitors the
+    # app's own 503 page instead of taking the machine out of routing.
+    path          = "/healthz"
     timeout       = "10s"
 
 [[vm]]

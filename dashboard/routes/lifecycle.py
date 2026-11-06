@@ -5,6 +5,7 @@ import logging
 from typing import Any
 
 import dashboard.db as db
+from dashboard.labels import display_id, display_label
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +26,13 @@ def get_lifecycle_partners() -> list[str]:
         return []
     try:
         rows = db.query(
-            f"select distinct partner_id from {_SCHEMA}.int_four_way_match order by 1"
+            f"select distinct partner_id from {_SCHEMA}.int_four_way_match"
         )
-        return [r["partner_id"] for r in rows]
+        # Sort by public label: real-ID alphabetical order would leak the mapping.
+        return sorted((r["partner_id"] for r in rows), key=display_label)
     except Exception:
         logger.exception("get_lifecycle_partners query failed")
-        return []
+        raise
 
 
 def get_lifecycle_stats(partner: str = "") -> dict[str, Any] | None:
@@ -111,7 +113,7 @@ def get_lifecycle_stats(partner: str = "") -> dict[str, Any] | None:
         }
     except Exception:
         logger.exception("get_lifecycle_stats query failed")
-        return None
+        raise
 
 
 def get_callout_stats(partner: str = "") -> list[dict[str, Any]]:
@@ -149,7 +151,7 @@ def get_callout_stats(partner: str = "") -> list[dict[str, Any]]:
         ]
     except Exception:
         logger.exception("get_callout_stats query failed")
-        return empty
+        raise
 
 
 def get_lifecycle_drilldown(
@@ -199,6 +201,9 @@ def get_lifecycle_drilldown(
         from dashboard.routes.exceptions import _fmt_dollar, _CLASS_LABELS
         for row in rows:
             row.pop("total_count", None)
+            row["partner_label"] = display_label(row["partner_id"])
+            row["po_display"] = display_id(row["po_number"], row["partner_id"])
+            row["invoice_display"] = display_id(row["invoice_number"], row["partner_id"])
             row["dollar_fmt"] = _fmt_dollar(float(row["dollar_impact"] or 0))
             row["class_label"] = _CLASS_LABELS.get(
                 row["exception_class"], row["exception_class"]
@@ -210,4 +215,4 @@ def get_lifecycle_drilldown(
         return {"total": total, "rows": rows}
     except Exception:
         logger.exception("get_lifecycle_drilldown query failed")
-        return empty
+        raise

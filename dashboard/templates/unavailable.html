@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Data Unavailable{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">EDI Reconciliation</div>
+  <h1 class="page-header__title">Data temporarily unavailable</h1>
+</div>
+
+<div class="empty-state">
+  <div class="empty-state__icon">&#x26A0;</div>
+  <div class="empty-state__title">The exception data could not be loaded</div>
+  <p class="empty-state__note">
+    The database did not answer, so no figures are shown. This is not a result:
+    it does not mean the engine found zero mismatches. Reload in a minute.
+  </p>
+</div>
+
+{% endblock %}

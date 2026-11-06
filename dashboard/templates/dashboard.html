@@ -126,7 +126,7 @@
       <select id="partner-filter" name="partner">
         <option value="">All partners</option>
         {% for p in partners %}
-        <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p }}</option>
+        <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p | partner_label }}</option>
         {% endfor %}
       </select>
 

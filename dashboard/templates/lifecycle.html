@@ -28,7 +28,7 @@
       <select id="lifecycle-partner-filter" name="partner" onchange="this.form.submit()">
         <option value="">All partners</option>
         {% for p in partners %}
-        <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p }}</option>
+        <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p | partner_label }}</option>
         {% endfor %}
       </select>
     </div>
@@ -81,5 +81,5 @@
 <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"
         integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i"
         crossorigin="anonymous"></script>
-<script src="/static/js/lifecycle.js"></script>
+<script src="/static/js/lifecycle.js?v=2026-11-06"></script>
 {% endblock %}

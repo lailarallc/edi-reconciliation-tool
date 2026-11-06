@@ -280,16 +280,19 @@
       .style("font-family", C.sans)
       .style("font-size", "11px")
       .style("fill", C.muted)
-      .text("Synthetic corpus — Walmart · UNFI · KeHE. UoM normalized to cases before comparison.");
+      .text("Synthetic corpus" +
+        (data.partner_labels && data.partner_labels.length
+          ? " — " + data.partner_labels.join(" · ") : "") +
+        ". UoM normalized to cases before comparison.");
   }
 
   function rowHtml(row) {
     var html = "<tr>";
-    html += '<td><span class="partner-badge">' + esc(row.partner_id) + "</span></td>";
+    html += '<td><span class="partner-badge">' + esc(row.partner_label) + "</span></td>";
     html += '<td><span class="chip chip--' + esc(row.exception_class) + '">' + esc(row.class_label) + "</span></td>";
-    html += "<td>" + esc(row.po_number || "—") + "</td>";
+    html += "<td>" + esc(row.po_display || "—") + "</td>";
     html += "<td>" + esc(row.sku || "—") + "</td>";
-    html += "<td>" + esc(row.invoice_number || "—") + "</td>";
+    html += "<td>" + esc(row.invoice_display || "—") + "</td>";
     html += '<td class="td--dollar">' + esc(row.dollar_fmt) + "</td>";
     html += "<td>";
     if (row.dispute_urgent) {
@@ -327,7 +330,7 @@
     if (currentPartner) url += "&partner=" + encodeURIComponent(currentPartner);
 
     fetch(url)
-      .then(function(r) { return r.json(); })
+      .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function(res) {
         var rows = (res && res.rows) || [];
         dd.total = (res && res.total) || 0;

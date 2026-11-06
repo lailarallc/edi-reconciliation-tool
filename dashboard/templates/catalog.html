@@ -14,6 +14,12 @@
 </div>
 
 {# ---- Filters: partner + date range ---- #}
+{% if order_data_unavailable %}
+<p class="empty-state__note" style="margin-bottom:16px;">
+  Order data is temporarily unavailable, so the partner and date filters and the
+  matching-order lists cannot load. The patterns below do not depend on it.
+</p>
+{% endif %}
 <section class="section" style="margin-bottom:24px;">
   <form id="catalog-filter-form" method="get" action="/catalog">
 
@@ -24,7 +30,7 @@
         <select id="catalog-partner-filter" name="partner" onchange="this.form.submit()">
           <option value="">All partners</option>
           {% for p in partners %}
-          <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p }}</option>
+          <option value="{{ p }}" {{ 'selected' if p == selected_partner else '' }}>{{ p | partner_label }}</option>
           {% endfor %}
         </select>
       </div>
@@ -273,11 +279,11 @@
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       html += "<tr>";
-      html += '<td><span class="partner-badge">' + esc(r.partner_id) + "</span></td>";
+      html += '<td><span class="partner-badge">' + esc(r.partner_label) + "</span></td>";
       html += '<td><span class="chip chip--' + esc(r.exception_class) + '">' + esc(r.class_label) + "</span></td>";
-      html += "<td>" + esc(r.po_number || "—") + "</td>";
+      html += "<td>" + esc(r.po_display || "—") + "</td>";
       html += "<td>" + esc(r.sku || "—") + "</td>";
-      html += "<td>" + esc(r.invoice_number || "—") + "</td>";
+      html += "<td>" + esc(r.invoice_display || "—") + "</td>";
       html += '<td class="td--dollar">' + esc(r.dollar_fmt) + "</td>";
       html += "<td>";
       if (r.dispute_urgent) {
@@ -311,7 +317,7 @@
 
       var url = "/api/catalog/drilldown?class=" + encodeURIComponent(excClass) + getFilterParams();
       fetch(url)
-        .then(function(r) { return r.json(); })
+        .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then(function(data) {
           var rows = data.rows || data;
           var summary = data.summary || null;

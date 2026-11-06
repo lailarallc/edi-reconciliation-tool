@@ -1,6 +1,14 @@
 """Failure pattern catalog — static definitions for all 7 exception classes."""
 from __future__ import annotations
 
+from dashboard.labels import display_id, display_label
+
+# Worked examples sit beside dollar figures, so partners (and the invoice
+# numbers that embed them) show their public labels.
+_RETAILER = display_label("WALMARTUS", capitalize=False)
+_DIST_B = display_label("KEHE", capitalize=False)
+_RETAILER_INVOICE = display_id("WMT-INV-055", "WALMARTUS")
+
 _PATTERNS = [
     {
         "key":            "ordered_not_asnd",
@@ -26,7 +34,7 @@ _PATTERNS = [
             ("KeHE",     "Multi-stop 856 with O-level HL loops; key resolution falls back to BOL"),
         ],
         "example": (
-            "PO 850-2024-001 (Walmart) — 24 cases SKU-GRANOLA-6PK @ $47.50 = $1,140\n"
+            f"PO 850-2024-001 ({_RETAILER}) — 24 cases SKU-GRANOLA-6PK @ $47.50 = $1,140\n"
             "No 856 found within the match window → ordered_not_asnd: $1,140 at risk"
         ),
     },
@@ -52,7 +60,7 @@ _PATTERNS = [
             ("UNFI",  "Credit + rebill on 3rd order creates a temporary shipped_not_invoiced gap"),
         ],
         "example": (
-            "PO 856-2024-012 (KeHE) — 24 cases shipped\n"
+            f"PO 856-2024-012 ({_DIST_B}) — 24 cases shipped\n"
             "810 invoice covers 20 cases → shipped_not_invoiced: 4 cases × $47.50 = $190 unbilled"
         ),
     },
@@ -79,7 +87,7 @@ _PATTERNS = [
             ("Walmart",  "High deduction volume; reason codes in REF segments must be decoded before disputing"),
         ],
         "example": (
-            "810 invoice WMT-INV-055: $1,140.00 for 24 cases\n"
+            f"810 invoice {_RETAILER_INVOICE}: $1,140.00 for 24 cases\n"
             "820 remittance: $898.50 paid\n"
             "→ short_pay: $241.50 deducted, 30-day dispute window"
         ),
@@ -162,7 +170,7 @@ _PATTERNS = [
             ("KeHE",  "852 aggregates multi-DC inventory; per-DC ASNs can create apparent gaps"),
         ],
         "example": (
-            "UNFI 852 (week of 2024-02-05): 96 cases SKU-GRANOLA-6PK sold\n"
+            f"{display_label('UNFI')} 852 (week of 2024-02-05): 96 cases SKU-GRANOLA-6PK sold\n"
             "856 ASNs in same period: 120 cases shipped\n"
             "→ 852_discrepancy: 24-case gap (destock or return risk)"
         ),
@@ -190,7 +198,7 @@ _PATTERNS = [
             ("UNFI",     "997 sometimes omitted for test ISA envelopes — filter by ISA11 qualifier"),
         ],
         "example": (
-            "856 ASN sent to KeHE — ISA control 000000042\n"
+            f"856 ASN sent to {_DIST_B} — ISA control 000000042\n"
             "No 997 received within 48 hours\n"
             "→ missing_997_ack (operational, $0 dollar impact)\n"
             "   Check VAN delivery logs; retransmit if no delivery confirmation"
