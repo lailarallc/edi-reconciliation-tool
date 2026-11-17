@@ -1,0 +1,12 @@
+# Typed figures this repo prints with no canon key (owner, 2026-11-15; plan U19, U22).
+# One row per figure per location. The platform's fleet check holds the row count to a ceiling that only
+# falls: give a figure a key (or stop printing it) and delete its row. listed=yes: the read map names it, and
+# U19 owes its key; listed=no: U22 works it down. Generated from the 2026-11-15 manifest pass.
+file_line	printed	exact_value	meaning	source	kind	listed
+README.md:25	50 SKUs ... 5 product lines ... 6 contracted retailers ... 10 channels	50	universe counts (twice: prose and canonical baseline)	prose only	prose-only	no
+dashboard/app.py:327	ordered 150, shipped 138, invoiced 150, paid 131		lifecycle fallback counts labelled source 'canonical' (illustrative, not from the warehouse)	constant dashboard/app.py:327-333	assumption	yes
+dashboard/app.py:329	{count: 12, dollars: 1800.0}	1800	lifecycle fallback callout 1	constant	assumption	no
+dashboard/app.py:330	{count: 12, dollars: 2100.0}	2100	lifecycle fallback callout 2	constant	assumption	no
+dashboard/app.py:331	{count: 19, dollars: 2400.0}	2400	lifecycle fallback callout 3	constant	assumption	no
+docs/finding-820-rmr-grain.md:11	PAID = 109M cases (later 28M) against INVOICED = 11M		pre-fix lifecycle case counts, int_four_way_match	prose only	prose-only	no
+docs/finding-820-rmr-grain.md:16	$17M Short Pay card		short-pay dollar impact on the exception dashboard (edi_marts.fct_exceptions)	prose only; live query dashboard/app.py:277-286 over fct_exceptions	prose-only	yes
